@@ -23,30 +23,38 @@ Our system consists of three main pipelines:
 - Performance reporting
 
 ```mermaid
-graph TD
-    subgraph Company Data Ingestion
-        A[Raw Ticket Data] --> B{Data Clean}
-        B --> C{Feature Engineering}
-    end
+graph TB
+    %% Company Data Ingestion Pipeline
+    A[Raw Ticket Data] --> B{Data Clean}
+    B --> C{Feature Engineering}
+    
+    %% Add spacing
+    C --> |processed data| D
+    
+    %% Customer Support Pipeline
+    D[Customer Portal] --> E[Customer Data]
+    E --> F{Data Analysis}
+    F --> G[Insights DB]
+    
+    %% Add spacing
+    F --> |analyzed data| H
+    
+    %% Team Pipeline
+    H[Support Agent Dashboard] --> I{Ticket Classification}
+    I --> J{Response Generation}
+    J --> K[Result Report]
 
-    subgraph Customer Support Pipeline
-        D[Customer Portal] --> E[Customer Data]
-        E --> F{Data Analysis}
-        F --> G[Insights DB]
-    end
-
-    subgraph Team Pipeline
-        H[Support Agent Dashboard] --> I{Ticket Classification}
-        I --> J{Response Generation}
-        J --> K[Result Report]
-    end
-
+    %% Styling
     style E fill:#a8e6cf
     style I fill:#ffd3b6
     style J fill:#98ddca
     style K fill:#98ddca
     style G fill:#bfd4fe
     style F fill:#d4c4fb
+    
+    %% Labels
+    classDef pipeline fill:#f9f,stroke:#333,stroke-width:2px
+    class A,B,C pipeline
 ```
 
 ## 🚀 Current Status
