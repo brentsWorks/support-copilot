@@ -25,36 +25,40 @@ Our system consists of three main pipelines:
 ```mermaid
 graph TB
     %% Company Data Ingestion Pipeline
-    A[Raw Ticket Data] --> B{Data Clean}
-    B --> C{Feature Engineering}
+    A[Raw Ticket Data] --> B[Data Clean]
+    B --> C[Feature Engineering]
     
     %% Add spacing
     C --> |processed data| D
     
     %% Customer Support Pipeline
     D[Customer Portal] --> E[Customer Data]
-    E --> F{Data Analysis}
+    E --> F[Data Analysis]
     F --> G[Insights DB]
     
     %% Add spacing
     F --> |analyzed data| H
     
     %% Team Pipeline
-    H[Support Agent Dashboard] --> I{Ticket Classification}
-    I --> J{Response Generation}
+    H[Support Agent Dashboard] --> I[Ticket Classification]
+    I --> J[Response Generation]
     J --> K[Result Report]
 
-    %% Styling
-    style E fill:#a8e6cf
-    style I fill:#ffd3b6
-    style J fill:#98ddca
-    style K fill:#98ddca
-    style G fill:#bfd4fe
-    style F fill:#d4c4fb
-    
-    %% Labels
-    classDef pipeline fill:#f9f,stroke:#333,stroke-width:2px
-    class A,B,C pipeline
+    %% Styling with lighter, more readable colors
+    style A fill:#f5f5f5,stroke:#333
+    style B fill:#f5f5f5,stroke:#333
+    style C fill:#f5f5f5,stroke:#333
+    style D fill:#f5f5f5,stroke:#333
+    style E fill:#e6f3ff,stroke:#333
+    style F fill:#e6f3ff,stroke:#333
+    style G fill:#e6f3ff,stroke:#333
+    style H fill:#f5f5f5,stroke:#333
+    style I fill:#fff0e6,stroke:#333
+    style J fill:#e6ffe6,stroke:#333
+    style K fill:#e6ffe6,stroke:#333
+
+    %% Use rectangles instead of diamonds for better readability
+    classDef default fill:#f5f5f5,stroke:#333,stroke-width:1px
 ```
 
 ## 🚀 Current Status
