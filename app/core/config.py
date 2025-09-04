@@ -6,6 +6,8 @@ class Settings(BaseSettings):
 	# Google Cloud Settings
 	GOOGLE_CLOUD_PROJECT: str
 	GOOGLE_APPLICATION_CREDENTIALS: str
+	BIGQUERY_DATASET_ID: str
+	BIGQUERY_TABLE_ID: str
 
 	class Config:
 		env_file = ".env"
