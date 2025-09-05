@@ -64,7 +64,8 @@ class BigQueryService:
 			SELECT {fields}
 			FROM `{settings.GOOGLE_CLOUD_PROJECT}.{self.dataset_id}.{self.table_id}`
 			{f"WHERE {where_clause}" if where_clause else ""}
-			LIMIT {limit}
+			{f"ORDER BY {order_by}" if order_by else ""}
+			{f"LIMIT {limit}" if limit is not None else ""}
 		"""
 
 		try:
@@ -72,7 +73,60 @@ class BigQueryService:
 			return [dict(row) for row in query_job.result()]
 		except Exception as e:
 			raise Exception(f"Failed to query table: {str(e)}")
-	
+
+	async def get_tickets(self, limit: int = 100) -> List[Dict]:
+		"""Get tickets with specific fields from the table.
+		
+		Args:
+			limit: Maximum limit on the number of rows to return(default: 100)
+		
+		Returns:
+			List[Dict[str, Any]]: List of tickets with specified fields
+		"""
+
+		select_fields = [
+			"ticket_id",
+			"ticket_subject",
+			"ticket_description",
+			"ticket_resolution",
+			"ticket_status"
+		]
+
+		try:
+			return await self.query_table(
+				select_fields=select_fields,
+				limit=limit
+			)
+		except Exception as e:
+			raise Exception(f"Failed to get tickets: {str(e)}")
+		
+	async def get_ticket_by_id(self, ticket_id: int) -> Optional[Dict]:
+		"""Get a specific ticket by its ID.
+		
+		Args:
+			ticket_id: The ID of the ticket to get
+		
+		Returns:
+			Dict: The ticket with the specified ID or None if not found
+		"""
+
+		select_fields = [
+			"ticket_id",
+			"ticket_subject",
+			"ticket_description",
+			"ticket_resolution",
+			"ticket_status"
+		]
+
+		try:
+			results = await self.query_table(
+				select_fields=select_fields,
+				where_clause=f"ticket_id = {ticket_id}"
+			)
+			return results[0] if results else None
+		except Exception as e:
+			raise Exception(f"Failed to get ticket by ID: {str(e)}")
+
 	async def test_connection(self) -> Dict[str, str]:
 		"""Test the BigQuery connection and table access.
 		
