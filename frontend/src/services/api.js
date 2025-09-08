@@ -1,7 +1,7 @@
 const BASE_URL = "http://localhost:8000"
 
 // GET /health
-export async function getHealth() {
+export async function testConnection() {
   try {
     const response = await fetch(`${BASE_URL}/health`)
     if (!response.ok) {
