@@ -1,13 +1,43 @@
-export async function testConnection() {
+const BASE_URL = "http://localhost:8000"
+
+// GET /health
+export async function getHealth() {
   try {
-    const response = await fetch("http://localhost:8000/health");
+    const response = await fetch(`${BASE_URL}/health`)
     if (!response.ok) {
-      throw new Error(`HTTP error! status: ${response.status}`);
+      throw new Error(`HTTP error! status: ${response.status}`)
     }
-    const data = await response.json();
-    return data;
+    return await response.json()
   } catch (error) {
-    console.error("Error fetching health:", error);
-    throw error;
+    console.error("Error fetching health:", error)
+    throw error
+  }
+}
+
+// GET /tickets?limit=100
+export async function getTickets(limit = 100) {
+  try {
+    const response = await fetch(`${BASE_URL}/tickets?limit=${limit}`)
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`)
+    }
+    return await response.json()
+  } catch (error) {
+    console.error("Error fetching tickets:", error)
+    throw error
+  }
+}
+
+// GET /tickets/{ticket_id}
+export async function getTicketById(ticketId) {
+  try {
+    const response = await fetch(`${BASE_URL}/tickets/${ticketId}`)
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`)
+    }
+    return await response.json()
+  } catch (error) {
+    console.error(`Error fetching ticket ${ticketId}:`, error)
+    throw error
   }
 }
