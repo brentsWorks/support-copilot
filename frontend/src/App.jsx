@@ -1,5 +1,7 @@
 import Layout from './components/Layout'
 import Home from './components/Home'
+import CustomerDashboard from './pages/CustomerDashboard'
+import AgentDashboard from './pages/AgentDashboard'
 
 import { BrowserRouter, Routes, Route } from 'react-router-dom'
 function App() {
@@ -9,8 +11,8 @@ function App() {
       <Layout>
         <Routes>
           <Route path="/" element={<Home />} />
-          <Route path="/customer" element={<h1>Customer View</h1>} />
-          <Route path="/agent" element={<h1>Agent View</h1>} />
+          <Route path="/customer" element={ <CustomerDashboard /> } />
+          <Route path="/agent" element={<AgentDashboard /> } />
         </Routes>
       </Layout>
     </BrowserRouter>
