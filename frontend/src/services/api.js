@@ -1,4 +1,4 @@
-export async function getHealth() {
+export async function testConnection() {
   try {
     const response = await fetch("http://localhost:8000/health");
     if (!response.ok) {

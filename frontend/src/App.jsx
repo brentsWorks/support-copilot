@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react"
-import { getHealth } from "./services/api"
+import { testConnection } from "./services/api"
 
 function App() {
   const [message, setMessage] = useState("Loading...")
@@ -7,7 +7,7 @@ function App() {
   const fetchData = async () => {
     try {
       setMessage("Loading...")
-      const data = await getHealth()
+      const data = await testConnection()
       setMessage(data.message || JSON.stringify(data))
     } catch (error) {
       setMessage(`Error: ${error.message}`)
