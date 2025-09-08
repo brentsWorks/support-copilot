@@ -1,1 +1,10 @@
 @import 'tailwindcss';
+
+@theme {
+  --color-primary: #ffffff;
+  --color-secondary: #ee6c4d;
+  --color-accent: #f59e0b;
+  --color-muted: #6b7280;
+  --color-background: #293241;
+  --color-foreground: #111827;
+}
