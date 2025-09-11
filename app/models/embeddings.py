@@ -12,6 +12,5 @@ class EmbeddingResponse(BaseModel):
 
 # Request body schema for storing an embedding
 class EmbeddingTicketRequest(BaseModel):
-    ticket_id: int
     vector: List[float]
     text: str

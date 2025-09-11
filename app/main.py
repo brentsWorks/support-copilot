@@ -85,14 +85,14 @@ async def generate_embedding(request: EmbeddingRequest):
             detail=f"Failed to generate embedding: {str(e)}"
         )
 
-@app.post("/embedding/store")
-async def store_ticket_embedding(request: EmbeddingTicketRequest):
+@app.post("/embedding{ticket_id}")
+async def store_ticket_embedding(ticket_id: int, request: EmbeddingTicketRequest):
     """
     Store an embedding for a given ticket.
     """
     try:
         result = await embedding_service.store_embedding(
-            ticket_id=request.ticket_id,
+            ticket_id=ticket_id,
             vector=request.vector,
             text=request.text,
             upsert=True  # allow update if already exists
