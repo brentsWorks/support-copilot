@@ -45,7 +45,7 @@ class EmbeddingService:
         query = f"""
         SELECT ml_generate_embedding_result AS embedding
         FROM ML.GENERATE_EMBEDDING(
-            MODEL `{self.project_id}.ml_playground.text_embed_model`,
+            MODEL `{self.project_id}.{self.dataset_id}.embedding_model`,
             (SELECT '{escaped_text}' AS content),
             STRUCT(TRUE AS flatten_json_output)
         )

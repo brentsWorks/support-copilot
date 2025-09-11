@@ -1,6 +1,8 @@
 from fastapi import FastAPI, HTTPException
 from app.services.bigquery_service import bigquery_service
+from app.services.embedding_service import embedding_service
 from fastapi.middleware.cors import CORSMiddleware
+from app.models.embeddings import EmbeddingRequest, EmbeddingResponse
 
 app = FastAPI()
 
@@ -53,3 +55,32 @@ async def get_ticket_by_id(ticket_id: int):
             detail=f"Ticket with ID {ticket_id} not found"
         )
     return ticket
+
+@app.post("/embedding", response_model=EmbeddingResponse)
+async def generate_embedding(request: EmbeddingRequest):
+    """Generate embedding for plain text using the embedding service."""
+    try:
+        if not request.text or not request.text.strip():
+            raise HTTPException(
+                status_code=400,
+                detail="Text cannot be empty or None"
+            )
+        
+        embedding = await embedding_service.generate_embedding(request.text)
+        
+        return EmbeddingResponse(
+            embedding=embedding,
+            dimension=len(embedding),
+            text=request.text
+        )
+        
+    except ValueError as e:
+        raise HTTPException(
+            status_code=400,
+            detail=str(e)
+        )
+    except Exception as e:
+        raise HTTPException(
+            status_code=500,
+            detail=f"Failed to generate embedding: {str(e)}"
+        )
