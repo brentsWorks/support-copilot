@@ -211,7 +211,7 @@ class EmbeddingService:
         if text is None:
             text = ""
 
-        table_fqn = f"`{self.project_id}.{self.dataset_id}.ticket_embeddings`"
+        table_fqn = f"`{self.project_id}.embeddings.ticket_embeddings`"
 
         if upsert:
             # Idempotent write: update existing row for ticket_id or insert new

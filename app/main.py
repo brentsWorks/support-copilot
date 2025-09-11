@@ -2,7 +2,7 @@ from fastapi import FastAPI, HTTPException
 from app.services.bigquery_service import bigquery_service
 from app.services.embedding_service import embedding_service
 from fastapi.middleware.cors import CORSMiddleware
-from app.models.embeddings import EmbeddingRequest, EmbeddingResponse
+from app.models.embeddings import EmbeddingRequest, EmbeddingResponse, EmbeddingTicketRequest
 
 app = FastAPI()
 
@@ -84,3 +84,21 @@ async def generate_embedding(request: EmbeddingRequest):
             status_code=500,
             detail=f"Failed to generate embedding: {str(e)}"
         )
+
+@app.post("/embedding/store")
+async def store_ticket_embedding(request: EmbeddingTicketRequest):
+    """
+    Store an embedding for a given ticket.
+    """
+    try:
+        result = await embedding_service.store_embedding(
+            ticket_id=request.ticket_id,
+            vector=request.vector,
+            text=request.text,
+            upsert=True  # allow update if already exists
+        )
+        return result
+    except ValueError as ve:
+        raise HTTPException(status_code=400, detail=str(ve))
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Failed to store embedding: {str(e)}")
