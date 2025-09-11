@@ -3,7 +3,6 @@ EmbeddingService class for generating text embeddings using BigQuery ML's native
 """
 
 from google.cloud import bigquery
-s
 from app.core.config import settings
 from app.services.bigquery_service import BigQueryService
 from typing import List, Dict, Any, Optional
