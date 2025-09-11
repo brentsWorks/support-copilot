@@ -25,20 +25,20 @@ def setup_embedding_model():
     # Create the text-embedding-004 model
     print(f"\n1. Creating {settings.EMBEDDING_MODEL_NAME} model...")
     
-    model_name = f"{settings.EMBEDDING_MODEL_NAME}_model"
+    model_name = settings.EMBEDDING_MODEL_NAME
     
     create_model_query = f"""
     CREATE OR REPLACE MODEL `{settings.GOOGLE_CLOUD_PROJECT}.{settings.BIGQUERY_DATASET_ID}.{model_name}`
     REMOTE WITH CONNECTION `{settings.GOOGLE_CLOUD_PROJECT}.us-west1.vertex_ai_connection`
     OPTIONS (
         remote_service_type = 'CLOUD_AI_TEXT_EMBEDDING_MODEL_V1',
-        endpoint = '{settings.EMBEDDING_MODEL_NAME}'
+        endpoint = 'text-embedding-004'
     )
     """
     
     try:
-        print(f"Creating model: {model_name}")
-        print(f"Using endpoint: {settings.EMBEDDING_MODEL_NAME}")
+        print(f"Creating model: embedding_model")
+        print(f"Using endpoint: text-embedding-004")
         
         query_job = service.client.query(create_model_query)
         query_job.result()  # Wait for completion
@@ -57,10 +57,11 @@ def setup_embedding_model():
     print(f"\n2. Testing the model...")
     
     test_query = f"""
-    SELECT ml_generate_text_embedding_result
-    FROM ML.GENERATE_TEXT_EMBEDDING(
-        MODEL `{settings.GOOGLE_CLOUD_PROJECT}.{settings.BIGQUERY_DATASET_ID}.{model_name}`,
-        (SELECT 'Hello, world! This is a test.' AS content)
+    SELECT ml_generate_embedding_result AS embedding
+    FROM ML.GENERATE_EMBEDDING(
+        MODEL `{settings.GOOGLE_CLOUD_PROJECT}.ml_playground.text_embed_model`,
+        (SELECT 'Hello, world! This is a test.' AS content),
+        STRUCT(TRUE AS flatten_json_output)
     )
     """
     
@@ -69,7 +70,7 @@ def setup_embedding_model():
         results = list(query_job.result())
         
         if results:
-            embedding = results[0].ml_generate_text_embedding_result
+            embedding = results[0].embedding
             print(f"✅ Model test successful!")
             print(f"   Generated {len(embedding)}-dimensional embedding")
             print(f"   First 5 values: {embedding[:5]}")
@@ -89,7 +90,7 @@ def setup_embedding_model():
     print("\n" + "=" * 50)
     print("🎉 BigQuery ML Text Embedding Model Setup Complete!")
     print(f"✅ Model: {settings.GOOGLE_CLOUD_PROJECT}.{settings.BIGQUERY_DATASET_ID}.{model_name}")
-    print(f"✅ Endpoint: {settings.EMBEDDING_MODEL_NAME}")
+    print(f"✅ Endpoint: text-embedding-004")
     print("✅ Ready for production use!")
     
     return True

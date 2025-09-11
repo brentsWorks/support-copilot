@@ -10,7 +10,7 @@ class Settings(BaseSettings):
 	BIGQUERY_TABLE_ID: str
 	
 	# Embedding Model Settings
-	EMBEDDING_MODEL_NAME: str = "text-embedding-004"
+	EMBEDDING_MODEL_NAME: str = "embedding_model"
 	EMBEDDING_TABLE_NAME: str = "ticket_embeddings"
 
 	class Config:

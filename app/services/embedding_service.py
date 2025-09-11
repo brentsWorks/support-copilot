@@ -45,14 +45,15 @@ class EmbeddingService:
         if not text or not text.strip():
             raise ValueError("Text cannot be empty or None")
             
-        # Escape single quotes in text
-        escaped_text = text.replace("'", "\\'")
+        # Escape text for SQL - handle quotes and newlines
+        escaped_text = text.replace("'", "\\'").replace("\n", "\\n").replace("\r", "\\r")
         
         query = f"""
-        SELECT ml_generate_text_embedding_result
-        FROM ML.GENERATE_TEXT_EMBEDDING(
-            MODEL `{self.project_id}.{self.dataset_id}.{settings.EMBEDDING_MODEL_NAME}_model`,
-            (SELECT '{escaped_text}' AS content)
+        SELECT ml_generate_embedding_result AS embedding
+        FROM ML.GENERATE_EMBEDDING(
+            MODEL `{self.project_id}.ml_playground.text_embed_model`,
+            (SELECT '{escaped_text}' AS content),
+            STRUCT(TRUE AS flatten_json_output)
         )
         """
         
@@ -63,7 +64,7 @@ class EmbeddingService:
             if not results:
                 raise Exception("No embedding result returned")
                 
-            embedding_result = results[0].ml_generate_text_embedding_result
+            embedding_result = results[0].embedding
             
             # Validate that we got a 768-dimensional vector
             if not isinstance(embedding_result, list) or len(embedding_result) != 768:
