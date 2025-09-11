@@ -3,8 +3,9 @@ EmbeddingService class for generating text embeddings using BigQuery ML's native
 """
 
 from google.cloud import bigquery
-from google.oauth2 import service_account
+s
 from app.core.config import settings
+from app.services.bigquery_service import BigQueryService
 from typing import List, Dict, Any, Optional
 import logging
 
@@ -16,19 +17,13 @@ class EmbeddingService:
 
     def __init__(self):
         """Initialize EmbeddingService with BigQuery connection."""
-        self.client = self._initialize_client()
+        self.bigquery_service = BigQueryService(
+            dataset_id=settings.BIGQUERY_DATASET_ID,
+            table_id=settings.BIGQUERY_TABLE_ID
+        )
+        self.client = self.bigquery_service.client
         self.project_id = settings.GOOGLE_CLOUD_PROJECT
         self.dataset_id = settings.BIGQUERY_DATASET_ID
-
-    def _initialize_client(self) -> bigquery.Client:
-        """Initialize and return a BigQuery client with proper authentication."""
-        credentials = service_account.Credentials.from_service_account_file(
-            settings.GOOGLE_APPLICATION_CREDENTIALS
-        )
-        return bigquery.Client(
-            project=settings.GOOGLE_CLOUD_PROJECT,
-            credentials=credentials
-        )
 
     async def generate_embedding(self, text: str) -> List[float]:
         """Generate 768-dimensional embedding for text using text-embedding-004 model.
@@ -163,15 +158,21 @@ class EmbeddingService:
             Dict[str, str]: Status of the connection and model test
         """
         try:
-            # Test basic BigQuery connection
-            datasets = list(self.client.list_datasets())
+            # Test basic BigQuery connection using BigQueryService
+            bigquery_status = await self.bigquery_service.test_connection()
+            
+            if bigquery_status["status"] != "success":
+                return {
+                    "status": "error",
+                    "message": f"BigQuery connection failed: {bigquery_status['message']}"
+                }
             
             # Test embedding model with simple text
             test_embedding = await self.generate_embedding("Test connection")
             
             return {
                 "status": "success",
-                "message": f"Connected to BigQuery with {len(datasets)} datasets. Generated {len(test_embedding)}-dimensional embedding.",
+                "message": f"BigQuery connection successful. Generated {len(test_embedding)}-dimensional embedding.",
                 "embedding_dimension": len(test_embedding)
             }
             
