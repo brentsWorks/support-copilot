@@ -85,7 +85,7 @@ async def generate_embedding(request: EmbeddingRequest):
             detail=f"Failed to generate embedding: {str(e)}"
         )
 
-@app.post("/embedding{ticket_id}")
+@app.post("/embedding/store/{ticket_id}")
 async def store_ticket_embedding(ticket_id: int, request: EmbeddingTicketRequest):
     """
     Store an embedding for a given ticket.

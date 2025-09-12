@@ -127,6 +127,54 @@ class BigQueryService:
 		except Exception as e:
 			raise Exception(f"Failed to get ticket by ID: {str(e)}")
 
+	async def batch_embed_tickets(self, limit: int = 100) -> int:
+		"""Batch embed and store resolved tickets using description only.
+		
+		This method:
+		- Gets all tickets using get_tickets(limit)
+		- Filters for resolved tickets only
+		- Embeds only the ticket description (for similarity search)
+		- Stores the resolution for easy retrieval when similar tickets are found
+		
+		Args:
+			limit: Maximum limit of tickets to process
+		
+		Returns:
+			int: Number of resolved tickets processed
+		"""
+		try:
+			tickets = await self.get_tickets(limit=limit)
+			processed_count = 0
+			
+			for ticket in tickets:
+				# Only process resolved tickets
+				if ticket.get("ticket_status") != "resolved":
+					continue
+				
+				# Only embed the description for similarity search
+				description = ticket.get("ticket_description", "")
+				
+				# Skip tickets with no meaningful description
+				if not description or not description.strip():
+					print(f"Skipping ticket {ticket['ticket_id']} - no meaningful description to embed")
+					continue
+				
+				# Generate embedding for the description only
+				embedding = await embedding_service.generate_embedding(description)
+				
+				# Store the embedding with the resolution for easy retrieval
+				await embedding_service.store_embedding(
+					ticket_id=ticket["ticket_id"], 
+					vector=embedding, 
+					ticket_resolution=ticket.get("ticket_resolution", "")
+				)
+				
+				processed_count += 1
+				print(f"Processed resolved ticket {ticket['ticket_id']}: {len(description)} chars")
+			
+			return processed_count
+		except Exception as e:
+			raise Exception(f"Failed to batch embed tickets: {str(e)}")
 	async def test_connection(self) -> Dict[str, str]:
 		"""Test the BigQuery connection and table access.
 		
