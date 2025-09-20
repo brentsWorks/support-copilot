@@ -45,24 +45,17 @@ class RetrievalService:
       query_embedding: List[float] = await self.embedding_service.generate_embedding(query)
 
       embeddings_table = f"`{self.project_id}.embeddings.ticket_embeddings`"
-      tickets_table = f"`{self.project_id}.support_tickets_raw.kaggle_tickets_clean`"
 
       sql = f"""
       WITH distances AS (
         SELECT
-          t.ticket_id,
-          t.ticket_subject,
-          t.ticket_description,
-          t.ticket_resolution,
+          e.ticket_id,
+          e.ticket_resolution,
           ML.DISTANCE(e.embedding_vector, @query_embedding) AS distance
         FROM {embeddings_table} e
-        JOIN {tickets_table} t
-          ON e.ticket_id = t.ticket_id
       )
       SELECT
         ticket_id,
-        ticket_subject,
-        ticket_description,
         ticket_resolution,
         1 - (distance / 2) AS similarity_score
       FROM distances
@@ -80,7 +73,7 @@ class RetrievalService:
 
       query_job = self.client.query(sql, job_config=job_config)
       rows = list(query_job.result())
-
+      
       if not rows:
         return []
 
@@ -88,8 +81,6 @@ class RetrievalService:
       for r in rows:
         results.append({
           "ticket_id": r.ticket_id,
-          "ticket_subject": r.ticket_subject,
-          "ticket_description": r.ticket_description,
           "ticket_resolution": r.ticket_resolution,
           "similarity_score": float(r.similarity_score),
         })
