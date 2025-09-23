@@ -175,6 +175,7 @@ class BigQueryService:
 			return processed_count
 		except Exception as e:
 			raise Exception(f"Failed to batch embed tickets: {str(e)}")
+	
 	async def test_connection(self) -> Dict[str, str]:
 		"""Test the BigQuery connection and table access.
 		
